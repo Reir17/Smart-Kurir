@@ -174,3 +174,49 @@ def random_flag():
     if map_image:
         source_pos = random_road_position(map_image)
         dest_pos = random_road_position(map_image)
+
+def reset_simulasi():
+    global kurir_pos, kurir_dir, source_pos, dest_pos, highlight_path, info_lines, click_state
+    kurir_pos = (0, 0)
+    kurir_dir = "RIGHT"
+    source_pos = (0, 0)
+    dest_pos = (0, 0)
+    highlight_path = []
+    click_state = 0
+    info_lines = ["[INFO] Simulasi telah di-reset."]
+
+buttons = [
+    Button(10, 10, 150, 40, "Load Peta", load_map),
+    Button(10, 60, 150, 40, "Acak Kurir", random_kurir),
+    Button(10, 110, 150, 40, "Acak Tujuan", random_flag),
+    Button(10, 160, 150, 40, "Mulai", mulai),
+    Button(10, 210, 150, 40, "Reset", reset_simulasi)
+]
+
+running = True
+clock = pygame.time.Clock()
+while running:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+        elif event.type == MOUSEBUTTONDOWN:
+            for btn in buttons:
+                btn.click(event.pos)
+            if event.pos[0] > 200 and map_image:
+                mx, my = event.pos[0] - 200, event.pos[1]
+                if is_road(map_image, (mx, my)):
+                    if click_state == 0:
+                        kurir_pos = (mx, my)
+                        info_lines = ["[INFO] Posisi kurir dipilih."]
+                    elif click_state == 1:
+                        source_pos = (mx, my)
+                        info_lines = ["[INFO] Titik awal dipilih."]
+                    elif click_state == 2:
+                        dest_pos = (mx, my)
+                        info_lines = ["[INFO] Titik tujuan dipilih."]
+                    click_state = (click_state + 1) % 3
+                else:
+                    info_lines = ["[WARNING] Titik yang dipilih bukan jalan."]
+    render()
+    clock.tick(60)
+pygame.quit()
