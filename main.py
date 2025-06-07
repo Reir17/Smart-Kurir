@@ -307,25 +307,6 @@ def render():
         if map_surface:
             screen.blit(map_surface, (200, 0))
             
-            # Visualisasi path
-            if highlight_path:
-                for i, pos in enumerate(highlight_path):
-                    if pos is None:
-                        continue
-                        
-                    try:
-                        color = (255 - i * 255 // len(highlight_path), 
-                                i * 255 // len(highlight_path), 0)
-                        pygame.draw.circle(screen, color, (200 + int(pos[0]), int(pos[1])), 3)
-                        
-                        if i < len(highlight_path) - 1 and highlight_path[i+1] is not None:
-                            next_pos = highlight_path[i+1]
-                            pygame.draw.line(screen, color, 
-                                           (200 + int(pos[0]), int(pos[1])),
-                                           (200 + int(next_pos[0]), int(next_pos[1])), 2)
-                    except:
-                        continue
-            
             # Titik awal dan tujuan
             if source_pos is not None:
                 pygame.draw.circle(screen, (255, 255, 0), (200 + int(source_pos[0]), int(source_pos[1])), 8)
