@@ -175,6 +175,49 @@ def random_flag():
         source_pos = random_road_position(map_image)
         dest_pos = random_road_position(map_image)
 
+def mulai():
+    global kurir_pos, highlight_path, info_lines
+    if not (map_image and kurir_pos and source_pos and dest_pos):
+        info_lines = ["[WARNING] Lengkapi posisi kurir, source, dan tujuan!"]
+        return
+
+    info_lines = ["[INFO] Menghitung jalur..."]
+    render()
+    pygame.time.delay(1000)
+
+    t1 = time.time()
+    path1 = bfs(kurir_pos, source_pos, map_image)
+    t2 = time.time()
+    if not path1:
+        info_lines = ["[ERROR] Tidak ada jalur ke source!"]
+        return
+    bfs_time = t2 - t1
+    info_lines = [f"[BFS] {bfs_time:.4f}s | Len: {len(path1)}"]
+    render()
+    pygame.time.delay(1000)
+
+    t3 = time.time()
+    path2 = astar(source_pos, dest_pos, map_image)
+    t4 = time.time()
+    if not path2:
+        info_lines.append("[ERROR] Tidak ada jalur ke destinasi!")
+        return
+    astar_time = t4 - t3
+    info_lines.append(f"[A*]  {astar_time:.4f}s | Len: {len(path2)}")
+    full_path = path1 + path2[1:]
+    render()
+    pygame.time.delay(1000)
+
+    for pos in full_path:
+        kurir_pos = pos
+        update_direction(full_path, pos)
+        render()
+        pygame.time.delay(5)
+
+    highlight_path = []
+    info_lines.append("[SELESAI]")
+
+
 def reset_simulasi():
     global kurir_pos, kurir_dir, source_pos, dest_pos, highlight_path, info_lines, click_state
     kurir_pos = (0, 0)
