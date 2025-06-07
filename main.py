@@ -100,3 +100,57 @@ def astar(start, goal, image):
                 f_score = tentative_g + heuristic(neighbor, goal)
                 heapq.heappush(open_set, (f_score, neighbor))
     return None
+
+class Button:
+    def _init_(self, x, y, w, h, text, callback):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.text = text
+        self.callback = callback
+    def draw(self, surface):
+        pygame.draw.rect(surface, (180, 180, 180), self.rect)
+        label = font.render(self.text, True, (0, 0, 0))
+        surface.blit(label, (self.rect.x + 5, self.rect.y + 5))
+    def click(self, pos):
+        if self.rect.collidepoint(pos):
+            self.callback()
+
+def draw_kurir(pos, direction):
+    x, y = pos
+    x += 0.5
+    y += 0.5
+    x = int(x)
+    y = int(y)
+    size = 10
+    if direction == "UP":
+        points = [(x, y - size), (x - size, y + size), (x + size, y + size)]
+    elif direction == "DOWN":
+        points = [(x, y + size), (x - size, y - size), (x + size, y - size)]
+    elif direction == "LEFT":
+        points = [(x - size, y), (x + size, y - size), (x + size, y + size)]
+    elif direction == "RIGHT":
+        points = [(x + size, y), (x - size, y - size), (x - size, y + size)]
+    pygame.draw.polygon(screen, (255, 0, 0), points)
+
+def draw_info():
+    info_box_height = 30
+    for i, line in enumerate(info_lines):
+        y_pos = SCREEN_HEIGHT - (len(info_lines) - i) * info_box_height
+        pygame.draw.rect(screen, (240, 240, 240), (10, y_pos, 180, info_box_height))
+        pygame.draw.rect(screen, (150, 150, 150), (10, y_pos, 180, info_box_height), 2)
+        label = font.render(line, True, (0, 0, 0))
+        screen.blit(label, (15, y_pos + 5))
+
+def render():
+    screen.fill((200, 200, 200))
+    for btn in buttons:
+        btn.draw(screen)
+    if map_surface:
+        screen.blit(map_surface, (200, 0))
+        if source_pos != (0, 0):
+            pygame.draw.circle(screen, (255, 255, 0), (200 + source_pos[0], source_pos[1]), 6)
+        if dest_pos != (0, 0):
+            pygame.draw.circle(screen, (255, 0, 0), (200 + dest_pos[0], dest_pos[1]), 6)
+        if kurir_pos != (0, 0):
+            draw_kurir((200 + kurir_pos[0], kurir_pos[1]), kurir_dir)
+    draw_info()
+    pygame.display.flip()
