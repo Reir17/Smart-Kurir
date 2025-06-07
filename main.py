@@ -154,3 +154,23 @@ def render():
             draw_kurir((200 + kurir_pos[0], kurir_pos[1]), kurir_dir)
     draw_info()
     pygame.display.flip()
+
+def load_map():
+    global map_image, map_surface
+    Tk().withdraw()
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        map_image = Image.open(file_path).convert('RGB')
+        map_image = map_image.resize((SCREEN_WIDTH - 200, SCREEN_HEIGHT))
+        map_surface = pygame.image.fromstring(map_image.tobytes(), map_image.size, map_image.mode)
+
+def random_kurir():
+    global kurir_pos
+    if map_image:
+        kurir_pos = random_road_position(map_image)
+
+def random_flag():
+    global source_pos, dest_pos
+    if map_image:
+        source_pos = random_road_position(map_image)
+        dest_pos = random_road_position(map_image)
