@@ -34,3 +34,42 @@ def is_road(image, pos):
         return False
     pixel = image.getpixel((x, y))
     return all(JALAN_COLOR_RANGE[0][i] <= pixel[i] <= JALAN_COLOR_RANGE[1][i] for i in range(3))
+
+def random_road_position(image):
+    while True:
+        x = random.randint(0, image.width - 1)
+        y = random.randint(0, image.height - 1)
+        if is_road(image, (x, y)):
+            return x, y
+
+def update_direction(path, current_pos):
+    global kurir_dir
+    i = path.index(current_pos)
+    if i + 1 < len(path):
+        next_pos = path[i + 1]
+        dx = next_pos[0] - current_pos[0]
+        dy = next_pos[1] - current_pos[1]
+        if dx == 1: kurir_dir = "RIGHT"
+        elif dx == -1: kurir_dir = "LEFT"
+        elif dy == -1: kurir_dir = "UP"
+        elif dy == 1: kurir_dir = "DOWN"
+
+def bfs(start, goal, image):
+    queue = deque()
+    queue.append((start, [start]))
+    visited = set()
+    visited.add(start)
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+    while queue:
+        current, path = queue.popleft()
+        if current == goal:
+            return path
+        for dx, dy in directions:
+            nx, ny = current[0] + dx, current[1] + dy
+            if (nx, ny) not in visited and is_road(image, (nx, ny)):
+                queue.append(((nx, ny), path + [(nx, ny)]))
+                visited.add((nx, ny))
+    return None
+
+def heuristic(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
